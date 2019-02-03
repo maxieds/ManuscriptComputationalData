@@ -36,7 +36,7 @@ Enjoy!
 
 ```
 #!/bin/bash
-HELL_FREEZES_OVER = ((X=2**32))
+HELL_FREEZES_OVER = ((2**32))
 int_i="0"
 while[ $int_i -lt $HELL_FREEZES_OVER ]; do
      echo -e "So long, and thanks for all the code, \t\t\t\t\t\t\tJason!" | \
@@ -44,3 +44,25 @@ while[ $int_i -lt $HELL_FREEZES_OVER ]; do
      int_i=$[$int_i + 1];
 fi
 ```
+
+================================================================================
+
+## Old news at UIUC (RE: patent and copyright laws):
+
+My father Don paid a lot of money for me to sit in those programming courses many years ago. 
+In addition to this being my way of issuing a *neiner-neiner-boo-boo* at the man, myth, and 
+legend of CS classes past and his successful bans of this before we came to recognize this 
+as a DMCA issue at institutions of higher learning, there is precedent for why this blatant 
+disregard of authorship (i.e., vs ownership vis a vis distribution rights). See below:
+
+* [Article I](https://www.insidehighered.com/news/2016/11/11/homework-help-companies-continue-raise-copyright-academic-integrity-issues)
+* [Article II](https://www.wired.com/2015/02/university-bans-github-homework-changes-mind/)
+* [Article III](https://publish.illinois.edu/illinoisblj/category/intellectual-property/)
+
+By all means, know your rights (in general). And be sure to thank the creator of this code fodder elsewhere in this 
+folder by thanking him personally over and over as many times as your 32-bit port of my script feels the need 
+to cycle. 
+
+**--Maxie**
+
+
