@@ -9,3 +9,5 @@ the time? ... Well as it turns out, there **IS** this precursor to g++ templates
 
 <img src="https://github.com/maxieds/ManuscriptComputationalData/blob/master/misc/other-publicly-funded/poster-boy-materials/kdtree-notes-page2.png" />
 
+<img src="https://github.com/maxieds/ManuscriptComputationalData/blob/master/misc/other-publicly-funded/poster-boy-materials/rbnotes-the-point3.png" />
+
