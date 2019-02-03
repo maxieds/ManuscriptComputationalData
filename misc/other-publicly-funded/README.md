@@ -59,6 +59,12 @@ disregard of authorship (i.e., vs ownership vis a vis distribution rights). See 
 * [Article II](https://www.wired.com/2015/02/university-bans-github-homework-changes-mind/)
 * [Article III](https://publish.illinois.edu/illinoisblj/category/intellectual-property/)
 
+================================================================================
+
+## Summing it up (like a geometric series rigorously justifying ones hash table implementation):
+
+<img src="https://github.com/maxieds/ManuscriptComputationalData/blob/master/misc/other-publicly-funded/OlBenMeetsCheGuevara2600Style.png" />
+
 By all means, know your rights (in general). And be sure to thank the creator of this code fodder elsewhere in this 
 folder by thanking him personally over and over as many times as your 32-bit port of my script feels the need 
 to cycle. 
