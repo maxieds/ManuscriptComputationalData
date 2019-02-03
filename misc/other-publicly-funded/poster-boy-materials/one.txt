@@ -1,0 +1,872 @@
+/******* [Trees] *******/
+     ** rooted tree with subtrees (each a tree itself)
+
+     ** binary trees: tree where each node has at most two children
+          * code is ~DLL [left ptr | el val | right ptr]
+          * code ~ linked list forwards
+     ** order n tree
+[Tree traversals]
+     
+     ** example code:
+
+          void Foo(TreeNode *ptr) {
+
+               if(ptr != NULL) {
+                    Foo(ptr->left);
+                    Foo(ptr->right);
+                    cout<<ptr->element;
+               }
+
+          }
+          
+     ** usual types of traversals:
+          
+                     (w)
+                   /     \
+                (j)       (p)
+               /   \     /   \
+             (r)   (a) (s)   (l)
+                  /
+                (h)
+          
+          * PreOrder: print before each of the recursive calls
+                      ordering: (root), L, R
+                      ex: w, j, r, a, h, p, s, l 
+                  
+                code: cout<<ptr->element; 
+                      PreOrder(ptr->left);
+                      PreOrder(ptr->right);
+                    
+          * inOrder: print in between the calls 
+                     ordering: L, (root), R
+                     ex: r, j, h, a, w, s, p, l
+                     
+          * postOrder: print after both r. calls
+                       ordering: L, R, (root)
+                       ex: r, h, a, j, s, l, p, w
+                       
+          * level order version:
+                       ex: w, j, p, r, a, s, l, h
+
+
+     ** structuring of the code: need public version to call, and
+        private version that has access to the *root:
+
+        class Tree {
+             
+             public:
+                  PreOrder();
+             private:
+                  PreOrder(TreeNode *node_ptr);
+
+        };
+
+     ** analysis of the usual traversals:
+
+          PreOrder(NULL) : O(1), tree with n nodes has n + 1 NULL ptrs
+                            => O(n + 1)
+          PreOrder(actual node) : O(1)*n => O(n)
+          (time to set up recursive calls)
+          running time: O(2n + 1) => O(n)
+
+[Other Tree Functions]
+
+     ** search : using any of the traversal methods
+     ** copy : use PreOrder, copy the root then any subtrees
+     ** clear : PostOrder, recursively delete the subtrees, then finally
+                delete the root 
+     ** ((level order traversals)) : print tree as it appears visually
+          (non-recursive form)
+          
+          * code snippet:
+              
+              void LevelOrder() {
+                   
+                   // O(1)
+                   Queue<TreeNode *> Q;
+                   Q.enqueue(root);
+
+                   // body of loop
+                   while(!Q.isEmpty()) { //run 2n + 2 times
+                        
+                        //each of these is O(1)
+                        TreeNode *temp = Q.dequeue();
+                        if(temp != NULL) {
+                             
+                             cout<<temp->elem;
+                             Q.enqueue(temp->left);
+                             Q.enqueue(temp->right);
+                        }
+
+                   }
+
+              }     
+
+           running time:
+                2n + 1 nodes and NULL ptrs, each enq. deq *1
+                O(2n + 1) => O(n)
+
+/******* [Binary Search Trees] 
+
+     ** idea is to get search running at O(lg n) vs O(n) for an unsorted
+        tree
+     ** each node's storage: (assume no duplicates)
+                     (X)
+                   /     \
+           (nodes < x)  (nodes > x)
+         
+         * inOrder traversals: prints in lexicographical order [get
+           example]
+         * the middle is not exactly the median
+
+     ** potential problem with this storage:
+               
+               * skewed trees could still have O(n) search times:
+               
+                          (10)
+                         /
+                       (9)
+                      /
+                    (8) 
+                  and so on (...)
+
+[BST code examples]
+
+     * find :
+
+          bool find(TreeNode *ptr, int x) {
+               
+               if(ptr == NULL)
+                    return false;
+               else if(x == ptr->element)
+                    return true;
+               else if(x < ptr->element)
+                    return find(ptr->left, x);
+               else
+                    return find(ptr->right, x);
+
+          }
+     * find iterative version : 
+          while(ptr != NULL) {
+              if(key == ptr->key)
+                   return ptr;
+              else if(key < ptr->key)
+                   ptr = ptr->left;
+              else
+                   ptr = ptr->right;
+
+         }
+         return NULL;
+         
+
+     * insert : similar to find, when find NULL insert; do not insert at
+                duplicates
+          
+          //need the & with the ptr so are modifying the actual node ptr
+          // also cp the mp, use fn. obj. to compare elements
+          void Insert(TreeNode * &ptr, int x) {
+          
+               if(ptr == NULL)
+                    ptr = new TreeNode(x);
+               else if(x < ptr->element)
+                    Insert(ptr->left, x);
+               else if(x > ptr->element)
+                    Insert(ptr->right, x);
+               //else duplicates
+
+          }
+
+     * remove : more complicated cases when node has two children
+                
+                * at a given node need to find value that can replace
+                  the node being removed and _preserve order_
+                * look at the subtress of the node:
+                     * maximum in the left subtree: in order predecessor
+                       (IOP) => rightmost value in the subtree
+                     * minimum in the right subtree: in order successor
+                       (IOS) => leftmost value in the subtree
+                     * all subtrees have these nodes and these nodes
+                       have 0 or 1 children (can delete the node easily)
+
+                * replace the node being removed with the IOS (or IOP),
+                  the actual node being removed is not deleted, instead
+                  values are shifted
+                * code:
+                    //public wrapper elsewhere
+                    void Remove(TreeNode *ptr, int x) {
+
+                         if(ptr == NULL)
+                              return;
+                         else if(x < ptr->element)
+                              Remove(ptr->left, x);
+                         else if(x > ptr->element)
+                              Remove(ptr->right, x);
+                         else { //found correct node
+
+                              if((ptr->left == NULL) && (ptr->right ==
+                                                                NULL)) {
+                                   delete ptr;
+                                   ptr = NULL;
+                              }
+                              else if(only one of the children is NULL)
+                              {
+                                   TreeNode *temp = ptr;
+                                   if(ptr->left == NULL)
+                                        ptr = ptr->right;
+                                   else
+                                        ptr = ptr->left;
+                                   delete temp;
+                                   //size--
+                              }
+                              else { //node has two children
+                                   
+                                   //bring up IOP, leftmost in right
+                                   //tree
+                                   TreeNode *temp = ptr->right;
+                                   while(temp->left != NULL)
+                                        temp = temp->left;
+                                   ptr->element = temp->element;
+                                   Remove(ptr->right, ptr->element);
+                              }
+
+                         }
+
+         * Copy:
+              if(ptr != NULL) {
+                   temp = new Node(ptr->element);
+                   temp->right = Copy(ptr->right);
+                   temp->left = Copy(ptr->left);
+              }
+              else
+                   return NULL;
+         * Clear:
+              if(ptr != NULL) {
+                   Clear(ptr->left);
+                   Clear(ptr->right);
+                   delete ptr;
+                   ptr = NULL;
+              }
+
+[Ideal bst tree]
+     ** perfect tree (each non-null node has two children)
+               * these are balanced trees
+
+                   (x)     |
+                  /   \    | h (all leaves are above level h)
+                (x)   (x)  |
+               /  \  /   \ | 
+               [and so on]
+               
+               * # nodes: n = 2^(h+1) - 1
+               * height: h = lg(n+1) - 1 => h = O(lg n)
+               * can search perfectly in O(lg n) time, but
+                 cannot handle all collection sizes
+
+[Normal bst analysis] : search runtime depends on height
+     ** worst case: (x)
+                      \
+                      (x)
+                        \
+                        (x) (...)
+                        * h = n - 1 => h = O(n)
+     ** find, insert, remove are O(h)
+          * best case: O(lg n)
+          * worst case: O(n)
+          * average: O(lg n)
+
+/******* [Priority Queues] : pq ADT <=> heap impl.
+
+     ** similar to queues : can always push nodes, the only node that
+                            is removed is the minimum element (differs
+                            from the original in that this is not
+                            necessarily the first value added)
+     
+     ** ADT: stores pairs (K, I) in set S : K (keys), I (element/info)
+              the ADT is used to min run times for finding the highest
+              priority element, run times of other ops may suffer (...)
+            * DeleteMin (return and remove the value)
+            * FindMin   (merely return the min value, ~front()/back())
+            * Insert
+            //isEmpty(set S)
+
+            * other functions: SearchAndRemove(int x), Incr/decr.
+              Priority
+
+     ** Impl. variations: 
+            
+            * unsorted list : Insert => O(1), (find/delete)Min => O(n)
+                                                           (w and  avg.)
+            * sorted list : Insert => O(n) (w and  avg.(n/2)) 
+                            (find/delete)Min => O(1)
+            * AVL tree version : Insert/(find/delete)Min => O(lg n)
+                        * best overall for ~equal numbers of both ops
+                        * if were using bst w => O(n)
+            
+            * complete, partially ordered tree version (heap) : 
+                     
+                     * complete tree array props : perfect tree down to
+                                 some depth k, then fill in the child
+                                 nodes from left to right
+                                 * uses level order traversal at every
+                                   possible node (infinite depth)
+                                   => label ordering in the array in
+                                   order inserted
+                                 * balanced height : h = O(lg n)
+                                          
+                     * partially ordered trees : maintain prop that the
+                       key at any given node is smaller (<= for dupl.) 
+                       than child nodes (meaning the root of a subtree is 
+                       also the min value, meaning that the root has the 
+                       highest priority)
+                       
+                     * _heap_ : complete, partially ordered tree with
+                                array implementation (size uses
+                                amortized version)
+
+                                * left_child(i) = 2i
+                                * right_child(i) = 2i + 1
+                                * parent(i) = |_ i/2 _|
+
+                                * can shift bits + 1: *2, + 1 in place
+                                  of div/mult ops
+                     
+                     [example lecture 18 slide 7]:         
+
+                                   
+                     
+
+ 
+                     * analysis on the ops : 
+                              FindMin(S) => O(1) (root ptr)
+                              DeleteMin(S) => O(lg n)
+                              Insert(K, I, S) => O(lg n)
+                     
+                     * min (os scheduling) or max heap (video game scores)
+                     
+     /* coding : need to reorder the tree (root of the tree) on insert
+                 or removal of the root */
+                 
+     ** Insert(x) : adding node to the complete tree (array cell),
+                    percolate upward (worst case run time new element is the
+                    root: (O(lg n) levels)*(O(1) per level))
+                    * perfect tree > 50% nodes in bottom row
+                    * complete tree > 50% in bottom two rows
+                         ==> avg case move 2 or 3 levels => O(1) avg.
+
+                    Insert(x) {
+                         
+                         size++;
+                         A[size] = x;
+                         
+                         while( i != 1 && GO) {
+                              if(A[i] < A[Par(i)]) {
+                                   swap(A[i], A[Par(i)]);
+                                   i = Par(i);
+                              }
+                              else
+                                   stop;
+                         }
+
+                    }
+     
+     ** DeleteMin : hold root (min value), copy last val in the complete to the root,
+                    percolate the val downwards, return root
+                    * want to find the new min/root value
+                    * put bubble in root space, move it around
+                    * avg and worst run times are O(lg n)
+
+                    DeleteMin() {
+                         min_el = arr[1];
+                         cur_el = arr[size--];
+                         //exceeds size when i*2 > size (left (and r)
+                         //children of the node do not exist)
+                         for(i=1 to i*2 exceeding size) {
+                              child = i*2;
+                              pick smallest of i's children(2i or 2i+1)
+                              if(cur_el > child) {
+                                   swap the values
+                                   new i value is the child's old one
+                              }
+                         }
+                         return deletedEl;
+                    }
+     
+     ** Additional Optimizations :
+                   * "bubble" don't swap each time (shift then copy)
+                   * "sentinel" value : A[0] = (some version of -1/0),
+                     no more i != 1 checks
+
+[Other heap functions]
+     ** BuildHeap in O(n) vs O(n lg n) for n insertions
+     ** n/2 is first element from RHS of array with children
+     ** for(i=n/2 to 1) Percolatedown(i)
+     ** percolatedown:
+            while(true) {
+                 child = i*2; //left
+                 if(child > size) break;
+                 pick the min of the children
+                 
+                 if(arr[i] > arr[child])
+                      //swap, new root is min of old par and child nodes
+                 else
+                      break;
+            }
+
+     **HeapSort: build with buildHeap, then empty the arr
+          => sort run time O(n lg n)
+
+/******* [disjoint sets]
+
+ ** equivalence relations (reflexive: x in R => (x,x) in R, symetric: 
+                         x,y in R (x,y) => (y,x) in R, transitive: for x,y,z
+                         in R (x,y), (y,z) in R => (x,z) in R)
+                         * can divide into equiv. classes under R (for
+                           example # (mod base))
+                         * another use: electrical circuits connecting
+                           wire to one part connects to all
+ ** given universe U with S_i in U, have S_i (intersect) S_j = NULL if
+    i, j are distinct
+
+ ** example: [a b c] [d e f], add a R e => set is joined [a b c d e f]
+ 
+ ** ADT: void Union(Set A, Set B); //Union(find(a), find(b));
+                                   // ~insert
+         Set Find(element x); // a R b ? use find(a) == find(b)
+                              // disjoint => each in exactly one set
+         
+         //Remove is not well defined
+         //MakeSet(x) : returns single element set
+
+[Implementation]
+ 
+ ** possibility: assume if have key can find disjoint set record with the 
+                 key at O(1)
+                * use array to optimize find store the set record
+                  at the key's cell in the array
+                * problem: Union -> O(n), need to inspect each of the n
+                  elements in the array to update the set field 
+                
+ ** Next attempt: given two sets, each has a pointer to a parent set
+                  * Union => O(1) since point one of the sets to the
+                    other
+                  * find will check what each set points to and return
+                    the top level set (/set name)
+                  * Uptrees: all lower level elemnts only point up to the 
+                    subtree root node, the entire tree's root node points to
+                    NULL (child nodes point to parents)
+                                      NULL
+                                       |                                   
+                                     (root) 
+                                     /    \          \  
+                               (par node) (par node) (x) 
+                                                [any # of children]
+
+
+                  * [section 7, slide 42 for Union example]
+
+                               
+[Disjoint sets code]
+ 
+ ** code has count fields at each node for smart unions (use this when
+    par_ptr == NULL (root node)
+ ** non-recursive find: return the set's root node
+          Node* Find(Node *P) {
+
+               //root at bottom of tree
+               R = P;
+               while(R->parent != NULL)
+                    R = R->parent;
+               return R; //upper ptr
+
+          }
+          // run time: O(n), n = size of the set (linked list)
+
+ ** Recursive find:
+          Node* Find(Node *P) {
+               if(P->parent == NULL)
+                    return P;
+               else
+                    return Find(P->parent);
+          }
+          // run time: O(n), n = size of the set (linked list)
+
+ ** Union: the parameter ptrs need to be heads of the set (x->parent ==
+           y->parent == NULL, use find with the keys to get these in the
+           coding)
+           
+          void Union(Node *x, Node *y) {
+               y->parent = x;
+          }
+          // run time: O(1)
+          
+ ** note: these are similar run times to the first implementation
+ 
+ ** Uptree array impl. : assume all elements in U can be described using
+                         [0, N], at each element's cell store the index
+                         of the parent node (-1 is NULL)
+ 
+ ** list impl (each node stores key and info record) : store key and
+    order lookup when a new (sg. set)/node is added (new nodes at the
+    end)
+[Implementation improvements for find]
+ 
+ ** 1) "smart unions"
+          * union by size : point the smaller set to the root of the
+            larger (fewer nodes have their depth incr. by 1)
+          * union by height : keeps worst case height lower
+            (only when there is a height tie does the overall h incr.)
+                    * this keeps the tree height at O(lg n)
+                      => find = lookup + search => 2*O(lg n)
+ ** 2) path compression
+          * union performance is optimal when all nodes point to the
+            single root node (having union adjust this would make union
+            run at greater than O(1))
+          * when using find to traverse, have find point all nodes along 
+            that path to root
+          * n elements in the set run m>=n ops (any), total run time is
+            O(m lg* n) => near constant time amortized analysis
+     
+     * smart_union(x, y) {
+            if(x->count >= y->count) {
+                 x->count += y->count;
+                 y->ptr = x;
+            }
+            //similarly for the other case, or with heights
+
+       }
+     
+     * find pc
+       Node* findPC(Node *P) {
+            Node *R = P;
+            while(R->parent != NULL)
+                 R = R->parent;
+            Q = R;
+            while(Q != R) {
+                 Node *temp = Q->parent;
+                 Q->ptr = R;
+                 Q = temp;
+            }
+            return R;
+       }
+     
+     * find pc 
+       Node* findPC(Node *P) {
+       
+            if(P->parent == NULL)
+                 return P;
+            else
+                 return (P->parent = findPC(P->parent));
+
+       }
+
+/******* [balanced binary search trees]
+
+     ** definition : "balanced"
+               *1) guarantee that height = O(lg n), meaning that avg.
+                 search time is the worst case search time (ordinary bst
+                 violates this property)
+               *2) must work for any size collection
+               *3) maintenence work to keep the tree balanced must
+                   be O(lg n) for insert, remove, etc.
+     ** attempt #1
+          * bst where at each node the subtrees are the same size:
+                              (x)
+                        /\           /\
+                       /  \         /  \
+                      /    \       /    \
+                     /______\     /______\
+          
+          * for example: perfect trees
+          * problem: will not work for all sizes (pick any even #)
+
+     ** attempt #2
+          * bst where at every node the subtrees have the same size or
+            differ in size by 1
+          * ex:
+                         (root)
+                        /     \
+                    (k - 1)   (k)
+                                 \
+                                 (insert max of the tree)
+                    * need to reorder : root -> left tree
+                    * worst case : must move all nodes in left subtree
+                                   O(n) [X]
+     ** attempt #3
+          * bst tree where at every node the heights of the subtrees are
+           the same
+          * problem:        (x)
+                           /   \
+                         (x)   (x) (can't insert, would be illegal)
+                             
+                            (x)
+                           /   \
+                         (x)   NULL (illegal)
+
+     ** attempt #4 (AVL trees)
+          * bst where at every node the heights are the same or differ
+            by 1
+          *1) h <= 1.44lg(n) => h = O(lg n)
+          *2) will work for any size
+          *3) can be efficiently maintained
+
+[AVL Trees]
+     ** height at node ptr: { -1 if the ptr is NULL
+                            { h = max(left subtree h, right h) + 1
+
+                            (x) h = 1
+                           /   \
+                          (x)  (x) h = 0
+                          / \  / \
+                           [NULL]   h = -1
+
+     ** balance at node = (height of right subtree) - (height of left)
+          * AVL trees have the property that at each node the
+            balance is 0, -1, +1
+     ** insert(x), remove(x) : (possible issues) ancestors can have
+                                their h or bal. changed
+               * spend O(1) per ancestor recalc h or bal
+               * tree prop h = O(lg n)
+               => maintenence is O(lg n)
+
+
+[Tree Rotations]
+     ** bal(x) = h(r) - h(l)
+     ** height(x) = max{h(r), h(l)} +1
+     ** necessary if the balance at node hits -2, +2
+     ** spend O(1)/level (rotations are O(1) ptr assignments)
+        for at most O(lg n) levels, recalculate h/bal. at node (O(1)
+        since this is stored at the node)
+
+     ** types: 
+          * SR, SL
+          * DR, DL : DR is SL then SR
+          * after rotations the height at the unbalanced node is 1 less
+            and the balance is 0 (balance exception )
+     
+     ** SR example: (height, bal)
+        *                (k2) (h+2, -1)  <--- p for insert
+                      /        \
+          (h+1, 0)  (k1)       /\        <--- k1 is temp
+                 /\     /\    / c\ (h, 0)
+                / a\   / b\  /____\
+               /____\ /____\
+              /     (h, 0)
+             /
+        (insert(x))
+        
+        * new pic:
+                         (k2) (h+3, -2)  <--- p for insert
+                      /        \
+          (h+2, -1) (k1)       /\
+                 /\     /\    / c\ (h, 0)
+                / a\   / b\  /____\
+               /____\ /____\
+              /     
+            (x) (1, 0)
+
+                 
+                 (*) the tree is left heavy, inserted outer node
+                     => single rotate right in the k1/k2 edge
+                             (k2)      (k1)
+                            /      =>     \
+                          (k1)            (k2)
+
+                     
+         * after SR :
+                          (k1) (h+2, 0)
+                      /\       \ 
+          (h+1,-1)   / a\      (k2) (h+1, 0)
+                    /____\   /\     /\
+                    /       / b\   / c\
+                  (x)      /____\ /____\
+                              (h, 0)
+         * SR code: (keep address intact for ptrs in the tree)
+              
+              temp= p->left;
+              p->left = temp->left;
+              temp->right = p;
+              p = temp; //this works since the code is passed * &
+              //update k1, k2 height and bal.
+     
+     ** SL is mirror (see section 08 slides)
+
+
+
+
+
+
+     ** DR example:
+                  * split the inner tree into sep. subtrees
+
+                            (k2) (h+3, -2)
+                         /         \
+                (h+2,1)(k1)        /\   (h, 0)
+                     /\    \      / c\ 
+              (h,0) / a\   (k3)  /____\  <--- k3: (h+1, -1)                         
+                   /____\  /   \  
+                          /\    /\   |       
+                         /b'\  /  \  | h
+                        /____\/_b''\ |
+                            \
+                     (insert new node)
+                         
+                  * SL on subtree root's (k2's) left child : k1/k3 edge
+                    (prep roation to get outer)
+
+
+
+
+
+                  * SR on subtree root (k2)
+
+
+
+
+
+     ** DL : 
+               
+
+
+
+
+** Rules for the rotations:
+                            (x)
+                           /   \
+                         (L)   (R)
+                        /   \ /   \
+                      SR   DR DL   SL (insert)
+
+        *1) What unbalanced node's subtree has greater height?
+               * left => right rotation (shift bal in other dir)
+               * right => left rotation
+        *2) for the given subtree in 1), what of its subrees has
+            greatest height?
+               * (r->r || l->l) : outer => single
+               * (r->l || l->r) : inner => double
+        * exception note: remove, can have tie: use single
+                          * subtree height does not change
+                          * bal -> |2| to |1| (vs to 0)
+                            [example slide 15 avl.pdf]
+
+                  
+[AVL code]
+     ** impl. notes:
+          * store the height in the node (O(1) to set/reset)
+          * inserting in l. or r. subtree does not affect the other
+     ** nodes store key and element, ptrs (l, r, parent), height
+     ** tree stores size of tree
+     ** find with iterators, empty(), size(), tree root points to the
+        header node (header->par = root, ->r = rightmost key)
+     ** destr : clear(root), delete header
+     ** Insert : h(l) != h(r), at most one single or double rotation
+                 (restores balance to 0 at critical node, once this is fixed
+                 the rest of the tree is unaffected)
+
+     ** Remove : (can have the exceptional case), may need to roate at
+                  every level
+
+/******* [Red black trees]     
+
+  ** balanced tree (same props): define the balance in terms of path 
+                                 length from root to NULL
+                    
+                    (root) "ruht"
+                    / /  \
+                   /   \  \ 
+                  /   /    \
+                 /   /  \   \
+                /___/____\__ \
+  
+  ** attempt #1 : every path from root to leaf has the same length
+                  * problem (really unbalanced trees)
+                             (x)
+                               \
+                               (x)
+                                 \
+                                 (x) (...), this would work
+  
+  ** attempt #2 : path from root to NULL has the same length
+                  * problem of do not have perfect tree:
+                           (x)
+                          /   \
+                        (x)   NULL
+                       /   \
+                     NULL  NULL
+
+  ** official red black tree version : longest path from root to NULL is
+                         no longer than 2*(length of shortest path r to
+                         NULL), this ensures O(lg n) height   
+
+                         (root)
+                     |   /    \    |
+                  k  |  /      \   | 2k
+                                \  |
+                                 \ |
+
+              * impl. rules: (color each node red or black) 
+                  
+                                    * NULL nodes are treated as black nodes (two versions
+                    of height depending on impl.)
+                  * root node is black (recolor in code), adding this
+                    one does not change balck height of the tree
+              * balance rules (/more impl.)    
+                  
+                  * every path from root to NULL has the same # of black
+                    nodes
+                  * no two red nodes in a row : no red node has a red
+                    parent (most reds in a row : alt r, b, r, b, (...)
+                  * preserve black height of the tree with red nodes
+                    (when height changes go all the way up to root)
+              * shortest path length : all black nodes
+              * longest : alternating from root to NULL
+              * [example tree in notes slide 4]
+
+                    
+                 
+     
+     ** insert/remove : bst insert/rm + maintenence (change colors,
+                        rotations), at end color root black
+     ** insert: (call new node x), if parent is black stop
+                * case I: x and its uncle are red
+                          * color parent and uncle black, grandparent
+                            red, grandparent is new x (repeat)
+                * case II: x's uncle is black (including NULL)
+                       a) x is an inner child
+                           * SL about x and parent (now have 2b) inner
+                             the parent is the new x) : total DR
+                       b) (fix case) x is an outer child
+                           * SR about grandparent and parent, color
+                             x's parent black, former gp red 
+                             (x's parent is now black)
+                * total : some rotation on x's gp, swap gp and new
+                  subtree root's color
+     
+     ** delete: usual bst rm, label the node in place of the deleted
+                node x/p
+                * pseudocode while(x/p is black && x/p not root) //stuff
+                
+                * if the deleted node was red, black height is the same
+                  (done)
+                * otherwise, all paths through x/p are short one black
+                  node
+                   * case I : sibling of p is red
+                           * left rotate about p's parent and sibling
+                           * color gp red (reduces to another case)
+                   * case II : x's sibling has at least one red child
+                               (the red child is not in useful position,
+                               move it go to next case)
+                          a) sibling has inner red child (no outer)
+                             * swap colors of w and its inner child
+                             * single rotate towards outer egde about w
+                               and the inner child
+                          b) (repair case) sibling's outer child is red
+                             (possibly both are red)
+                             * single rotate towards inner
+                             * color the sibling's former child red
+                               (done, parent black)
+                   * case III : p's sibling (w) is black and both of its
+                               children are black (no red children)
+                               * remove one of the black nodes from p
+                                 (recolor sibling w red)
+                               * push up the tree
+                           
