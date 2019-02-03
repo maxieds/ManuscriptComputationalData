@@ -61,7 +61,9 @@ disregard of authorship (i.e., vs ownership vis a vis distribution rights). See 
 
 ================================================================================
 
-## Summing it up (like a geometric series rigorously justifying ones hash table implementation):
+# Summing it up 
+
+## As in like a geometric series rigorously justifying ones hash table implementation:
 
 <img src="https://github.com/maxieds/ManuscriptComputationalData/blob/master/misc/other-publicly-funded/OlBenMeetsCheGuevara2600Style.png" />
 
