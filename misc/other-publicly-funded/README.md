@@ -45,6 +45,27 @@ while[ $int_i -lt $HELL_FREEZES_OVER ]; do
 fi
 ```
 
+```
+<ASX version="3.0">
+
+<title>CS225: dsImplem</title>
+<ABSTRACT>CS225</ABSTRACT>
+<ENTRY>
+
+<Ref href = "mms://dvideo2.cs.uiuc.edu/cs225/dsImplem.wmv" />
+<Ref href = "mms://dvideo1.cs.uiuc.edu/cs225/dsImplem.wmv" />
+<StartTime Value = "0:00" />
+
+         <TITLE>CS225: dsImplem</TITLE>
+         <COPYRIGHT>Copyright © 2005 All Rights Reserved</COPYRIGHT>
+         <ABSTRACT>CS225</ABSTRACT>
+
+
+</ENTRY>
+
+</ASX>
+```
+
 ================================================================================
 
 ## Old news at UIUC (RE: patent and copyright laws):
