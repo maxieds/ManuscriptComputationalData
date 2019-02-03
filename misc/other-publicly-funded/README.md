@@ -1,4 +1,6 @@
-# CS225 Lab Source Code Base (Archive for the good posterity of mother earth)
+# CS225 Lab Source Code Base
+
+## Archived for the good posterity of mother earth: 
 
 An archive of the CS225 lab source code which accompanied the lecture notes and other 
 in-class supplements in the Spring of 2005. I certainly had no part in writing this 
@@ -27,3 +29,18 @@ compiles with a modern g++ nor whether upgrades to the C++ standards have necess
 deprecated its practical uses in application. 
 
 Enjoy!
+
+================================================================================
+
+## Newsreader-type interactions for the intellectually curious:
+
+```
+#!/bin/bash
+HELL_FREEZES_OVER = ((X=2**32))
+int_i="0"
+while[ $int_i -lt $HELL_FREEZES_OVER ]; do
+     echo -e "So long, and thanks for all the code, \t\t\t\t\t\t\tJason!" | \
+              mail -s "See message line." jason.zych@gmail.com;
+     int_i=$[$int_i + 1];
+fi
+```
