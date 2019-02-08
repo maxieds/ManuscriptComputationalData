@@ -34,6 +34,8 @@ Enjoy!
 
 ## Newsreader-type interactions for the intellectually curious:
 
+### Let's all first choose to thank the author for their contributions to this code
+
 ```
 #!/bin/bash
 HELL_FREEZES_OVER = ((2**32))
@@ -44,6 +46,8 @@ while[ $int_i -lt $HELL_FREEZES_OVER ]; do
      int_i=$[$int_i + 1];
 fi
 ```
+
+### And, conversely, acknowledege a meanacing precursor to the DMCA takedown philosopy exercised recently at UIUC
 
 ```
 <ASX version="3.0">
@@ -91,6 +95,10 @@ disregard of authorship (i.e., vs ownership vis a vis distribution rights). See 
 By all means, know your rights (in general). And be sure to thank the creator of this code fodder elsewhere in this 
 folder by thanking him personally over and over as many times as your 32-bit port of my script feels the need 
 to cycle. 
+
+## Addendum 
+
+The [license file commit comment here](https://github.com/maxieds/ManuscriptComputationalData/commit/05a7b002d32579e9de3bdeef8575ac90d93d19c7#commitcomment-32239355) explains the choice of "*copyleft*" filler for the underspecified licensing specs implied by this code base which residually belongs to UIUC as a product of its educational system that be. It also clarifies some smaller order points about where practically (and formally legally) this license can actually be assumed to apply to the files in this (sub)repository. In particular, while *neiner-neiner-boo-boo-ing* at the author with toungue firmly in cheek, I still feel it's important enough to acknowledge *authorship rights* in so much as we can protect them with *copyrights* in some other entity's possesion, especially seeing as this was prime state-of-the-art source code within a highly ranked CS school at it's time. Let's also be sure to [thank Jason](https://github.com/maxieds/ManuscriptComputationalData/tree/master/misc/other-publicly-funded#newsreader-type-interactions-for-the-intellectually-curious) once again and welcome him to the club of open source contributors for giving us this soure code fodder to dwell on, shall we? And -- note that we shouldn't remember him for the asshat he was, but rather for the finer points which can still be found in his lectures today ...
 
 **--Maxie**
 
